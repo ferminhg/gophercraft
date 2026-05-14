@@ -68,5 +68,5 @@ func (m DummyMother) build(customize func(*dummyMotherBuild)) model.Dummy {
 	if err != nil {
 		panic(err)
 	}
-	return model.NewDummy(id, name, b.dummyType, createdAt)
+	return model.NewDummy(*id, *name, b.dummyType, *createdAt)
 }

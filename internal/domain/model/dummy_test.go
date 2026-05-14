@@ -47,16 +47,19 @@ func TestNewDummy_Valid(t *testing.T) {
 
 	id, err := model.NewDummyID(testUUID)
 	require.NoError(t, err)
+	require.NotNil(t, id)
 	name, err := model.NewDummyName("hello")
 	require.NoError(t, err)
+	require.NotNil(t, name)
 	created, err := model.NewDummyCreatedAt(time.Now().UTC())
 	require.NoError(t, err)
+	require.NotNil(t, created)
 
-	d := model.NewDummy(id, name, model.DummyTypeAlpha, created)
-	require.Equal(t, id, d.ID())
-	require.Equal(t, name, d.Name())
+	d := model.NewDummy(*id, *name, model.DummyTypeAlpha, *created)
+	require.Equal(t, *id, d.ID())
+	require.Equal(t, *name, d.Name())
 	require.Equal(t, model.DummyTypeAlpha, d.Type())
-	require.Equal(t, created, d.CreatedAt())
+	require.Equal(t, *created, d.CreatedAt())
 }
 
 func TestNewDummyType_Valid(t *testing.T) {
@@ -65,6 +68,7 @@ func TestNewDummyType_Valid(t *testing.T) {
 	for _, raw := range []string{"alpha", " beta ", "gamma"} {
 		got, err := model.NewDummyType(raw)
 		require.NoError(t, err)
+		require.NotNil(t, got)
 		require.True(t, got.IsValid())
 		require.NotEmpty(t, got.String())
 	}
@@ -74,8 +78,10 @@ func TestNewDummyType_Invalid(t *testing.T) {
 	t.Parallel()
 
 	for _, raw := range []string{"", "unknown", "delta"} {
-		_, err := model.NewDummyType(raw)
+		got, err := model.NewDummyType(raw)
+		require.Nil(t, got)
 		require.Error(t, err)
+		require.ErrorIs(t, err, model.ErrDummyTypeInvalid)
 	}
 }
 
@@ -98,13 +104,45 @@ func TestDummy_ToPrimitives(t *testing.T) {
 	created, err := model.NewDummyCreatedAt(time.Date(2025, 3, 14, 12, 0, 0, 0, time.UTC))
 	require.NoError(t, err)
 
-	d := model.NewDummy(id, name, model.DummyTypeBeta, created)
+	d := model.NewDummy(*id, *name, model.DummyTypeBeta, *created)
 	prim := d.ToPrimitives()
 
 	require.Equal(t, testUUID, prim.ID)
 	require.Equal(t, "hello", prim.Name)
 	require.Equal(t, "beta", prim.Type)
 	require.True(t, prim.CreatedAt.Equal(created.Time()))
+}
+
+func TestDummyID_NewErrors(t *testing.T) {
+	t.Parallel()
+
+	got, err := model.NewDummyID("")
+	require.Nil(t, got)
+	require.ErrorIs(t, err, model.ErrDummyIDEmpty)
+
+	got, err = model.NewDummyID("not-a-uuid")
+	require.Nil(t, got)
+	require.ErrorIs(t, err, model.ErrDummyIDInvalid)
+
+	got, err = model.NewDummyID(testUUID)
+	require.NoError(t, err)
+	require.NotNil(t, got)
+}
+
+func TestDummyName_NewErrors(t *testing.T) {
+	t.Parallel()
+
+	got, err := model.NewDummyName("   ")
+	require.Nil(t, got)
+	require.ErrorIs(t, err, model.ErrDummyNameEmpty)
+}
+
+func TestDummyCreatedAt_NewErrors(t *testing.T) {
+	t.Parallel()
+
+	got, err := model.NewDummyCreatedAt(time.Time{})
+	require.Nil(t, got)
+	require.ErrorIs(t, err, model.ErrDummyCreatedAtZero)
 }
 
 func TestDummyFromPrimitives_Valid(t *testing.T) {
@@ -118,6 +156,7 @@ func TestDummyFromPrimitives_Valid(t *testing.T) {
 		CreatedAt: created,
 	})
 	require.NoError(t, err)
+	require.NotNil(t, d)
 	require.Equal(t, testUUID, d.ID().String())
 	require.Equal(t, "aggregate-name", d.Name().String())
 	require.Equal(t, "gamma", d.Type().String())
@@ -135,8 +174,9 @@ func TestDummyFromPrimitives_Invalid(t *testing.T) {
 	}
 
 	tests := []struct {
-		name string
-		p    model.DummyPrimitives
+		name    string
+		p       model.DummyPrimitives
+		wantErr error
 	}{{
 		name: "empty id",
 		p: model.DummyPrimitives{
@@ -145,6 +185,7 @@ func TestDummyFromPrimitives_Invalid(t *testing.T) {
 			Type:      base.Type,
 			CreatedAt: base.CreatedAt,
 		},
+		wantErr: model.ErrDummyIDEmpty,
 	}, {
 		name: "empty name",
 		p: model.DummyPrimitives{
@@ -153,6 +194,7 @@ func TestDummyFromPrimitives_Invalid(t *testing.T) {
 			Type:      base.Type,
 			CreatedAt: base.CreatedAt,
 		},
+		wantErr: model.ErrDummyNameEmpty,
 	}, {
 		name: "invalid type",
 		p: model.DummyPrimitives{
@@ -161,6 +203,7 @@ func TestDummyFromPrimitives_Invalid(t *testing.T) {
 			Type:      "delta",
 			CreatedAt: base.CreatedAt,
 		},
+		wantErr: model.ErrDummyTypeInvalid,
 	}, {
 		name: "zero created at",
 		p: model.DummyPrimitives{
@@ -169,14 +212,16 @@ func TestDummyFromPrimitives_Invalid(t *testing.T) {
 			Type:      base.Type,
 			CreatedAt: time.Time{},
 		},
+		wantErr: model.ErrDummyCreatedAtZero,
 	}}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			_, err := model.DummyFromPrimitives(tt.p)
-			require.Error(t, err)
+			d, err := model.DummyFromPrimitives(tt.p)
+			require.Nil(t, d)
+			require.ErrorIs(t, err, tt.wantErr)
 		})
 	}
 }

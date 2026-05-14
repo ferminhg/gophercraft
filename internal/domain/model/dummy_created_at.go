@@ -1,9 +1,6 @@
 package model
 
-import (
-	"fmt"
-	"time"
-)
+import "time"
 
 // DummyCreatedAt is when the Dummy was created.
 type DummyCreatedAt struct {
@@ -11,11 +8,11 @@ type DummyCreatedAt struct {
 }
 
 // NewDummyCreatedAt rejects the zero time.
-func NewDummyCreatedAt(t time.Time) (DummyCreatedAt, error) {
+func NewDummyCreatedAt(t time.Time) (*DummyCreatedAt, error) {
 	if t.IsZero() {
-		return DummyCreatedAt{}, fmt.Errorf("created at: zero time")
+		return nil, ErrDummyCreatedAtZero
 	}
-	return DummyCreatedAt{value: t.UTC()}, nil
+	return &DummyCreatedAt{value: t.UTC()}, nil
 }
 
 // Time returns the instant in UTC.

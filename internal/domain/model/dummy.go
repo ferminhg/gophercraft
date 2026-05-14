@@ -50,24 +50,25 @@ func (d Dummy) CreatedAt() DummyCreatedAt {
 }
 
 // DummyFromPrimitives validates primitives and builds a Dummy.
-func DummyFromPrimitives(p DummyPrimitives) (Dummy, error) {
+func DummyFromPrimitives(p DummyPrimitives) (*Dummy, error) {
 	id, err := NewDummyID(p.ID)
 	if err != nil {
-		return Dummy{}, err
+		return nil, err
 	}
 	name, err := NewDummyName(p.Name)
 	if err != nil {
-		return Dummy{}, err
+		return nil, err
 	}
 	t, err := NewDummyType(p.Type)
 	if err != nil {
-		return Dummy{}, err
+		return nil, err
 	}
 	createdAt, err := NewDummyCreatedAt(p.CreatedAt)
 	if err != nil {
-		return Dummy{}, err
+		return nil, err
 	}
-	return NewDummy(id, name, t, createdAt), nil
+	d := NewDummy(*id, *name, *t, *createdAt)
+	return &d, nil
 }
 
 // ToPrimitives returns the aggregate fields as plain values.

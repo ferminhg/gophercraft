@@ -1,9 +1,6 @@
 package model
 
-import (
-	"fmt"
-	"strings"
-)
+import "strings"
 
 // DummyType classifies a Dummy variant.
 type DummyType struct {
@@ -26,12 +23,12 @@ var validDummyTypeStrings = map[string]struct{}{
 }
 
 // NewDummyType parses and validates s as a known DummyType label.
-func NewDummyType(s string) (DummyType, error) {
+func NewDummyType(s string) (*DummyType, error) {
 	trimmed := strings.TrimSpace(s)
 	if _, ok := validDummyTypeStrings[trimmed]; !ok {
-		return DummyType{}, fmt.Errorf("dummy type: invalid %q", trimmed)
+		return nil, ErrDummyTypeInvalid
 	}
-	return DummyType{value: trimmed}, nil
+	return &DummyType{value: trimmed}, nil
 }
 
 // String returns the canonical label.

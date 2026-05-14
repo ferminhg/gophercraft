@@ -13,16 +13,16 @@ type DummyID struct {
 }
 
 // NewDummyID parses and validates s as a UUID.
-func NewDummyID(s string) (DummyID, error) {
+func NewDummyID(s string) (*DummyID, error) {
 	trimmed := strings.TrimSpace(s)
 	if trimmed == "" {
-		return DummyID{}, fmt.Errorf("dummy id: empty")
+		return nil, ErrDummyIDEmpty
 	}
 	parsed, err := uuid.Parse(trimmed)
 	if err != nil {
-		return DummyID{}, fmt.Errorf("dummy id: %w", err)
+		return nil, fmt.Errorf("%w: %w", ErrDummyIDInvalid, err)
 	}
-	return DummyID{value: parsed.String()}, nil
+	return &DummyID{value: parsed.String()}, nil
 }
 
 // String returns the canonical UUID string form.
