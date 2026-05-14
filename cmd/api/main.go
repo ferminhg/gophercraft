@@ -1,3 +1,4 @@
+// Command api is the service entrypoint.
 package main
 
 import (
@@ -20,9 +21,12 @@ func main() {
 		addr = ":3000"
 	}
 
-	s := infrahandler.NewServer()
+	s, err := infrahandler.NewServer()
+	if err != nil {
+		log.Fatalf("http server init: %v", err)
+	}
 	s.RegisterRoutes()
-	if err := s.Run(addr); err != nil {
+	if err = s.Run(addr); err != nil {
 		log.Fatalf("http server: %v", err)
 	}
 }

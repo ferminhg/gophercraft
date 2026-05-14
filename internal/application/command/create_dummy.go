@@ -1,3 +1,4 @@
+// Package command contains write-side application use cases.
 package command
 
 import (

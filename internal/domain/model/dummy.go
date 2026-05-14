@@ -1,3 +1,4 @@
+// Package model defines domain entities and invariants.
 package model
 
 // Dummy is a placeholder aggregate root for bootstrapping the layout.

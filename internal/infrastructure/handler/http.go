@@ -1,6 +1,8 @@
+// Package handler is the HTTP driving adapter (Gin).
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,11 +14,13 @@ type Server struct {
 }
 
 // NewServer returns an HTTP adapter with Logger and Recovery middleware.
-func NewServer() *Server {
+func NewServer() (*Server, error) {
 	engine := gin.New()
-	engine.SetTrustedProxies(nil) // trust no proxies by default
+	if err := engine.SetTrustedProxies(nil); err != nil { // trust no proxies by default
+		return nil, fmt.Errorf("set trusted proxies: %w", err)
+	}
 	engine.Use(gin.Logger(), gin.Recovery())
-	return &Server{engine: engine}
+	return &Server{engine: engine}, nil
 }
 
 // Engine exposes the Gin engine for integration tests only.

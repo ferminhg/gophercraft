@@ -1,3 +1,4 @@
+// Package query contains read-side application use cases.
 package query
 
 import (

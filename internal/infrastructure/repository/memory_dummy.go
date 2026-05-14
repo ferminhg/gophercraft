@@ -1,3 +1,4 @@
+// Package repository implements driven adapters for persistence.
 package repository
 
 import (

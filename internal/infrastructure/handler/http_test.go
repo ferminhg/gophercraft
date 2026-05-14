@@ -16,7 +16,10 @@ func TestStatusEndpoint(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 
-	s := handler.NewServer()
+	s, err := handler.NewServer()
+	if err != nil {
+		t.Fatalf("new server: %v", err)
+	}
 	s.RegisterRoutes()
 
 	w := httptest.NewRecorder()
