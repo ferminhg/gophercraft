@@ -33,7 +33,14 @@ Run the full test suite with the race detector:
 make test
 ```
 
-There is a small **dummy** test under `internal/domain/model` so CI has something green from day one.
+Tests use **[testify](https://pkg.go.dev/github.com/stretchr/testify)** for assertions:
+
+- **`github.com/stretchr/testify/require`** — fatal checks (`t.FailNow`). Use for preconditions and setup (for example constructing a server or decoding a response) so the test stops immediately on failure.
+- **`github.com/stretchr/testify/assert`** — non-fatal checks. Use for comparing values (status codes, fields) when you still want clearer failures in one place.
+
+Docs: [testify on pkg.go.dev](https://pkg.go.dev/github.com/stretchr/testify).
+
+There is a small **dummy** test under `internal/domain/model` and an HTTP test under `internal/infrastructure/handler` so CI has something green from day one.
 
 ## Continuous integration (GitHub Actions)
 
