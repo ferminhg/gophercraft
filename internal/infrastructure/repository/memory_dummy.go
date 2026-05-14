@@ -29,15 +29,15 @@ func NewMemoryDummyRepository() *MemoryDummyRepository {
 func (r *MemoryDummyRepository) Save(_ context.Context, e model.Dummy) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.data[e.ID] = e
+	r.data[e.ID().String()] = e
 	return nil
 }
 
 // FindByID returns a Dummy by ID.
-func (r *MemoryDummyRepository) FindByID(_ context.Context, id string) (model.Dummy, error) {
+func (r *MemoryDummyRepository) FindByID(_ context.Context, id model.DummyID) (model.Dummy, error) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
-	e, ok := r.data[id]
+	e, ok := r.data[id.String()]
 	if !ok {
 		return model.Dummy{}, errors.New("dummy not found")
 	}

@@ -4,6 +4,8 @@ go 1.26
 
 require (
 	github.com/gin-gonic/gin v1.12.0
+	github.com/google/uuid v1.6.0
+	github.com/jaswdr/faker/v2 v2.9.1
 	github.com/stretchr/testify v1.11.1
 )
 

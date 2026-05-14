@@ -18,10 +18,7 @@ func NewCreateDummyHandler(repo port.DummyRepository) *CreateDummyHandler {
 	return &CreateDummyHandler{repo: repo}
 }
 
-// Handle persists a new Dummy when the model is valid.
+// Handle persists a new Dummy produced by the domain constructors.
 func (h *CreateDummyHandler) Handle(ctx context.Context, e model.Dummy) error {
-	if !e.IsValid() {
-		return ErrInvalidDummy
-	}
 	return h.repo.Save(ctx, e)
 }

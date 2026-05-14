@@ -19,6 +19,6 @@ func NewGetDummyHandler(repo port.DummyRepository) *GetDummyHandler {
 }
 
 // Handle returns a Dummy by identifier.
-func (h *GetDummyHandler) Handle(ctx context.Context, id string) (model.Dummy, error) {
+func (h *GetDummyHandler) Handle(ctx context.Context, id model.DummyID) (model.Dummy, error) {
 	return h.repo.FindByID(ctx, id)
 }
