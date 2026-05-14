@@ -1,5 +1,14 @@
 # syntax=docker/dockerfile:1
 
+FROM golang:1.26-alpine AS dev
+RUN apk --no-cache add make gcc musl-dev
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+EXPOSE 3000
+CMD ["go", "run", "./cmd/api"]
+
 FROM golang:1.26-alpine AS builder
 WORKDIR /src
 
