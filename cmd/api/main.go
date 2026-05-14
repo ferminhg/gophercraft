@@ -11,9 +11,9 @@ import (
 )
 
 func main() {
-	repo := repository.NewMemoryExampleRepository()
-	_ = command.NewCreateExampleHandler(repo)
-	_ = query.NewGetExampleHandler(repo)
+	repo := repository.NewMemoryDummyRepository()
+	_ = command.NewCreateDummyHandler(repo)
+	_ = query.NewGetDummyHandler(repo)
 	_ = infrahandler.NewServer()
 
 	fmt.Println("gophercraft api — startup")

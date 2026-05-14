@@ -1,12 +1,12 @@
 package model
 
-// Example is a placeholder aggregate root for bootstrapping the layout.
-type Example struct {
+// Dummy is a placeholder aggregate root for bootstrapping the layout.
+type Dummy struct {
 	ID   string
 	Name string
 }
 
 // IsValid reports whether required fields are present.
-func (e Example) IsValid() bool {
+func (e Dummy) IsValid() bool {
 	return e.ID != "" && e.Name != ""
 }

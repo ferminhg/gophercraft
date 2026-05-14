@@ -2,5 +2,5 @@ package command
 
 import "errors"
 
-// ErrInvalidExample is returned when Example fails domain validation.
-var ErrInvalidExample = errors.New("invalid example")
+// ErrInvalidDummy is returned when Dummy fails domain validation.
+var ErrInvalidDummy = errors.New("invalid dummy")
