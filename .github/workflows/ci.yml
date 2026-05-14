@@ -1,4 +1,4 @@
-name: CI
+name: 🛠️ CI — tests & lint
 
 on:
   pull_request:
@@ -11,31 +11,35 @@ permissions:
 
 jobs:
   test:
-    name: Test
+    name: 🧪 Tests (verbose, race detector)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+      - name: 🐹 Setup Go (from go.mod + cache)
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
 
-      - name: Run tests
+      - name: ✅ Run tests
         run: go test -v -race ./...
 
   lint:
-    name: Lint
+    name: 🔍 Lint — golangci-lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-go@v5
+      - name: 🐹 Setup Go (from go.mod + cache)
+        uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
           cache: true
 
-      - name: golangci-lint
+      - name: 📏 Run golangci-lint
         uses: golangci/golangci-lint-action@v6
         with:
           version: v2.11.4

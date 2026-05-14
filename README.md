@@ -35,6 +35,15 @@ make test
 
 There is a small **dummy** test under `internal/domain/model` so CI has something green from day one.
 
+## Continuous integration (GitHub Actions)
+
+This repository ships with a **GitHub Actions** workflow at [`.github/workflows/ci.yml`](.github/workflows/ci.yml). It runs on **pull requests** and on **pushes to `main`**, and includes:
+
+- **Testing**: `go test -v -race ./...` (same idea as `make test`)
+- **Linting**: **golangci-lint** using the checked-in [`.golangci.yml`](.golangci.yml)
+
+You get the same checks locally with `make test` and `make lint`.
+
 ## Docker
 
 Build the container image (tag defaults to `gophercraft:latest`; override with `IMAGE`):
