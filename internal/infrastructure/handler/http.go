@@ -1,17 +1,37 @@
 package handler
 
-import "net/http"
+import (
+	"net/http"
 
-// Server is a placeholder driving adapter for HTTP.
-type Server struct{}
+	"github.com/gin-gonic/gin"
+)
 
-// NewServer returns a new HTTP adapter shell.
-func NewServer() *Server {
-	return &Server{}
+// Server is the driving adapter for HTTP via Gin.
+type Server struct {
+	engine *gin.Engine
 }
 
-// RegisterRoutes mounts routes on the given mux (placeholder).
-func (s *Server) RegisterRoutes(mux *http.ServeMux) {
-	_ = s
-	_ = mux
+// NewServer returns an HTTP adapter with Logger and Recovery middleware.
+func NewServer() *Server {
+	engine := gin.New()
+	engine.SetTrustedProxies(nil) // trust no proxies by default
+	engine.Use(gin.Logger(), gin.Recovery())
+	return &Server{engine: engine}
+}
+
+// Engine exposes the Gin engine for integration tests only.
+func (s *Server) Engine() *gin.Engine {
+	return s.engine
+}
+
+// RegisterRoutes mounts application routes on the Gin engine.
+func (s *Server) RegisterRoutes() {
+	s.engine.GET("/status", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
+}
+
+// Run listens and serves HTTP on addr (e.g. ":3000").
+func (s *Server) Run(addr string) error {
+	return s.engine.Run(addr)
 }
