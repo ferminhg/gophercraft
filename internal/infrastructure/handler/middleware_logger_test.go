@@ -13,6 +13,7 @@ import (
 
 	"github.com/fermin/gophercraft/internal/infrastructure/handler"
 	"github.com/fermin/gophercraft/internal/infrastructure/logger"
+	"github.com/fermin/gophercraft/internal/infrastructure/metrics"
 )
 
 func TestLoggerMiddleware_LogsRequestFields(t *testing.T) {
@@ -23,7 +24,7 @@ func TestLoggerMiddleware_LogsRequestFields(t *testing.T) {
 	var buf bytes.Buffer
 	log := logger.NewZerologLoggerWithWriter(&buf, "info", false, nil)
 
-	s, err := handler.NewServer(log)
+	s, err := handler.NewServer(log, metrics.NoopRecorder{}, nil)
 	require.NoError(t, err)
 	s.RegisterRoutes()
 

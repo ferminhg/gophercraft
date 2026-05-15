@@ -12,6 +12,7 @@ import (
 
 	"github.com/fermin/gophercraft/internal/infrastructure/handler"
 	"github.com/fermin/gophercraft/internal/infrastructure/logger"
+	"github.com/fermin/gophercraft/internal/infrastructure/metrics"
 )
 
 func TestStatusEndpoint(t *testing.T) {
@@ -19,7 +20,7 @@ func TestStatusEndpoint(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 
-	s, err := handler.NewServer(logger.NewDiscardingZerologLogger())
+	s, err := handler.NewServer(logger.NewDiscardingZerologLogger(), metrics.NoopRecorder{}, nil)
 	require.NoError(t, err, "new server")
 	s.RegisterRoutes()
 
