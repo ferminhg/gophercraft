@@ -119,7 +119,7 @@ func TestNewZerologLoggerWithWriter_GlobalFieldsOnEveryLine(t *testing.T) {
 
 	var buf bytes.Buffer
 	l := logger.NewZerologLoggerWithWriter(&buf, "info", false, map[string]string{
-		"service.name":             "demo",
+		"service.name":           "demo",
 		"deployment.environment": "test",
 	})
 

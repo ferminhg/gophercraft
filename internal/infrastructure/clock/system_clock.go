@@ -1,3 +1,4 @@
+// Package clock provides time adapters implementing port.Clock.
 package clock
 
 import (

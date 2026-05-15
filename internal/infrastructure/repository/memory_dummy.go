@@ -1,3 +1,4 @@
+// Package repository provides in-memory persistence adapters.
 package repository
 
 import (

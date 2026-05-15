@@ -1,3 +1,4 @@
+// Package event provides infrastructure adapters for publishing domain events.
 package event
 
 import (
