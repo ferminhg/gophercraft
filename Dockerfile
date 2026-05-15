@@ -1,9 +1,8 @@
 # syntax=docker/dockerfile:1
 
 FROM golang:1.26-alpine AS dev
-RUN apk --no-cache add make gcc musl-dev curl
-RUN curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
-    | sh -s -- -b $(go env GOPATH)/bin
+RUN apk --no-cache add make gcc musl-dev
+RUN go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
