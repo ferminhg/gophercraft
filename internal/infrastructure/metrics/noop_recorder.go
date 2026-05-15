@@ -1,3 +1,4 @@
+// Package metrics provides infrastructure adapters for metrics recording.
 package metrics
 
 import "github.com/fermin/gophercraft/internal/domain/port"
