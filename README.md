@@ -1,6 +1,8 @@
 # gophercraft
 
-[![Coverage](https://codecov.io/gh/fermin/gophercraft/graph/badge.svg)](https://codecov.io/gh/fermin/gophercraft)
+[![codecov](https://codecov.io/github/ferminhg/gophercraft/graph/badge.svg?token=2RU5KXN4ZF)](https://codecov.io/github/ferminhg/gophercraft)
+
+
 
 A Go project template built with care 🐹 It comes with Hexagonal Architecture, CQRS, and observability out of the box — so you can skip the boring setup and focus on what matters: writing great code ✨ Just clone, configure, and start crafting.
 
