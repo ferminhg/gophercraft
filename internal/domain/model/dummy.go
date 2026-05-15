@@ -1,7 +1,11 @@
 // Package model defines domain entities and invariants.
 package model
 
-import "time"
+import (
+	"time"
+
+	"github.com/fermin/gophercraft/internal/domain/event"
+)
 
 // DummyPrimitives carries primitive values for serializing or reconstructing a Dummy.
 type DummyPrimitives struct {
@@ -13,6 +17,7 @@ type DummyPrimitives struct {
 
 // Dummy is a placeholder aggregate root for bootstrapping the layout.
 type Dummy struct {
+	event.AggregateRoot
 	id        DummyID
 	name      DummyName
 	dummyType DummyType
@@ -27,6 +32,13 @@ func NewDummy(id DummyID, name DummyName, t DummyType, createdAt DummyCreatedAt)
 		dummyType: t,
 		createdAt: createdAt,
 	}
+}
+
+// CreateDummy constructs a Dummy aggregate root and records a DummyCreated domain event.
+func CreateDummy(id DummyID, name DummyName, t DummyType, createdAt DummyCreatedAt) *Dummy {
+	d := NewDummy(id, name, t, createdAt)
+	d.RecordEvent(NewDummyCreated(id, name, t, createdAt))
+	return &d
 }
 
 // ID returns the aggregate identifier.

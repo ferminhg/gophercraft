@@ -225,3 +225,48 @@ func TestDummyFromPrimitives_Invalid(t *testing.T) {
 		})
 	}
 }
+
+func TestCreateDummy_RecordsDummyCreatedEvent(t *testing.T) {
+	t.Parallel()
+
+	id, err := model.NewDummyID(testUUID)
+	require.NoError(t, err)
+	name, err := model.NewDummyName("aggregate-new")
+	require.NoError(t, err)
+	createdAt, err := model.NewDummyCreatedAt(time.Date(2026, 5, 14, 9, 0, 0, 0, time.UTC))
+	require.NoError(t, err)
+
+	d := model.CreateDummy(*id, *name, model.DummyTypeGamma, *createdAt)
+	require.NotNil(t, d)
+
+	require.Equal(t, *id, d.ID())
+	require.Equal(t, *name, d.Name())
+	require.Equal(t, model.DummyTypeGamma, d.Type())
+	require.Equal(t, *createdAt, d.CreatedAt())
+
+	events := d.PullDomainEvents()
+	require.Len(t, events, 1)
+
+	got, ok := events[0].(*model.DummyCreated)
+	require.True(t, ok)
+	require.Equal(t, "dummy.created", got.EventName())
+	require.Equal(t, testUUID, got.AggregateID())
+	require.True(t, got.OccurredAt().Equal(createdAt.Time()))
+	require.Equal(t, "aggregate-new", got.DummyName())
+	require.Equal(t, "gamma", got.DummyType())
+}
+
+func TestCreateDummy_PullDomainEvents_ClearsBuffer(t *testing.T) {
+	t.Parallel()
+
+	id, err := model.NewDummyID(testUUID)
+	require.NoError(t, err)
+	name, err := model.NewDummyName("x")
+	require.NoError(t, err)
+	createdAt, err := model.NewDummyCreatedAt(time.Date(2026, 1, 2, 0, 0, 0, 0, time.UTC))
+	require.NoError(t, err)
+
+	d := model.CreateDummy(*id, *name, model.DummyTypeAlpha, *createdAt)
+	require.Len(t, d.PullDomainEvents(), 1)
+	require.Empty(t, d.PullDomainEvents())
+}

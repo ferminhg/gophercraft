@@ -9,6 +9,6 @@ import (
 
 // DummyRepository is a driven port for Dummy persistence.
 type DummyRepository interface {
-	Save(ctx context.Context, e model.Dummy) error
+	Save(ctx context.Context, e *model.Dummy) error
 	FindByID(ctx context.Context, id model.DummyID) (model.Dummy, error)
 }

@@ -1,4 +1,3 @@
-// Package repository implements driven adapters for persistence.
 package repository
 
 import (
@@ -26,10 +25,12 @@ func NewMemoryDummyRepository() *MemoryDummyRepository {
 }
 
 // Save persists or overwrites a Dummy by ID.
-func (r *MemoryDummyRepository) Save(_ context.Context, e model.Dummy) error {
+func (r *MemoryDummyRepository) Save(_ context.Context, e *model.Dummy) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.data[e.ID().String()] = e
+	stored := *e
+	stored.ClearDomainEvents()
+	r.data[e.ID().String()] = stored
 	return nil
 }
 
