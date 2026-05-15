@@ -2,7 +2,6 @@
 package main
 
 import (
-	"log"
 	"os"
 
 	"github.com/fermin/gophercraft/internal/application/command"
@@ -10,6 +9,7 @@ import (
 	"github.com/fermin/gophercraft/internal/infrastructure/clock"
 	infraevent "github.com/fermin/gophercraft/internal/infrastructure/event"
 	infrahandler "github.com/fermin/gophercraft/internal/infrastructure/handler"
+	infralogger "github.com/fermin/gophercraft/internal/infrastructure/logger"
 	"github.com/fermin/gophercraft/internal/infrastructure/repository"
 	"github.com/fermin/gophercraft/internal/infrastructure/uuid"
 )
@@ -19,17 +19,25 @@ func main() {
 	_ = command.NewCreateDummyHandler(repo, uuid.GoogleUUIDGenerator{}, clock.SystemClock{}, infraevent.NoopPublisher{})
 	_ = query.NewGetDummyHandler(repo)
 
+	logLevel := os.Getenv("LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = "info"
+	}
+	logPretty := os.Getenv("LOG_PRETTY") == "true" || os.Getenv("LOG_PRETTY") == "1"
+
+	appLogger := infralogger.NewZerologLogger(logLevel, logPretty, infralogger.GlobalFieldsFromEnv())
+
 	addr := os.Getenv("HTTP_ADDR")
 	if addr == "" {
 		addr = ":3000"
 	}
 
-	s, err := infrahandler.NewServer()
+	s, err := infrahandler.NewServer(appLogger)
 	if err != nil {
-		log.Fatalf("http server init: %v", err)
+		appLogger.Fatal("http server init", "error", err)
 	}
 	s.RegisterRoutes()
 	if err = s.Run(addr); err != nil {
-		log.Fatalf("http server: %v", err)
+		appLogger.Fatal("http server", "error", err)
 	}
 }

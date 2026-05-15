@@ -6,6 +6,8 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/fermin/gophercraft/internal/domain/port"
 )
 
 // Server is the driving adapter for HTTP via Gin.
@@ -13,13 +15,13 @@ type Server struct {
 	engine *gin.Engine
 }
 
-// NewServer returns an HTTP adapter with Logger and Recovery middleware.
-func NewServer() (*Server, error) {
+// NewServer returns an HTTP adapter with structured request logging and Recovery middleware.
+func NewServer(logger port.Logger) (*Server, error) {
 	engine := gin.New()
 	if err := engine.SetTrustedProxies(nil); err != nil { // trust no proxies by default
 		return nil, fmt.Errorf("set trusted proxies: %w", err)
 	}
-	engine.Use(gin.Logger(), gin.Recovery())
+	engine.Use(LoggerMiddleware(logger), gin.Recovery())
 	return &Server{engine: engine}, nil
 }
 

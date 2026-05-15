@@ -1,10 +1,13 @@
-.PHONY: build test lint run docker-build
+.PHONY: build test coverage lint run docker-build
 
 build:
 	go build ./...
 
 test:
-	go test -v -race ./...
+	go test -v -race -coverprofile=coverage.out ./...
+
+coverage: test
+	go tool cover -html=coverage.out
 
 lint:
 	@command -v golangci-lint >/dev/null 2>&1 || { printf 'golangci-lint not installed; see https://golangci-lint.run/install\n'; exit 1; }
