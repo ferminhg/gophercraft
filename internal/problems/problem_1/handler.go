@@ -13,6 +13,12 @@ type SessionConfig struct {
 	CustomHeaders map[string]string `json:"custom_headers,omitempty"`
 }
 
+func NewSessionConfig() SessionConfig {
+	return SessionConfig{
+		CustomHeaders: make(map[string]string),
+	}
+}
+
 type SessionResponse struct {
 	SessionID string `json:"session_id"`
 	Status    string `json:"status"`
@@ -25,7 +31,7 @@ func NewHandler() http.HandlerFunc {
 			return
 		}
 
-		var config SessionConfig
+		config := NewSessionConfig()
 		if err := json.NewDecoder(r.Body).Decode(&config); err != nil {
 			http.Error(w, "Bad request", http.StatusBadRequest)
 			return
