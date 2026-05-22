@@ -23,12 +23,10 @@ func NewHandler() http.HandlerFunc {
 			return
 		}
 
-		// BUG: Constructing URL via concatenation without url.QueryEscape.
-		// If targetURL contains spaces or special characters, this generates a malformed URI.
 		upstreamReqURL := "http://internal-scraper.local/v1/fetch?url=" + targetURL
 
 		log.Printf("Forwarding to: %s", upstreamReqURL)
-		
+
 		// Simulate the request breaking upstream (in reality client.Get would fail)
 		// For the exercise, we will just parse it to show it breaks
 		_, err := http.NewRequest(http.MethodGet, upstreamReqURL, nil)

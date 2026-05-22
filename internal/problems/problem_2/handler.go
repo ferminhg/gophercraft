@@ -15,8 +15,8 @@ type ProxyStatus struct {
 var regionStats = make(map[string]ProxyStatus)
 
 type RotateRequest struct {
-	Region string `json:"region"`
-	Success bool  `json:"success"`
+	Region  string `json:"region"`
+	Success bool   `json:"success"`
 }
 
 func NewHandler() http.HandlerFunc {
@@ -39,7 +39,6 @@ func NewHandler() http.HandlerFunc {
 
 		log.Printf("Recording proxy rotation for region %s", req.Region)
 
-		// BUG: Concurrent writes to the global map without a mutex
 		stats := regionStats[req.Region]
 		if req.Success {
 			stats.ActiveCount++

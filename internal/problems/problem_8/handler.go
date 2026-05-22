@@ -12,8 +12,6 @@ type SessionResponse struct {
 
 func NewHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// BUG: The endpoint is supposed to be for terminating sessions (DELETE).
-		// But it rejects everything EXCEPT GET requests, and then tries to process it.
 		if r.Method != http.MethodGet {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 			return

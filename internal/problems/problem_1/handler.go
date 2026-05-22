@@ -44,8 +44,7 @@ func NewHandler() http.HandlerFunc {
 
 		// ZenRows internal: inject a tracking trace ID for this session
 		traceID := "zr_trace_" + config.ProxyRegion
-		
-		// BUG: If custom_headers is omitted in JSON, this map is nil and assignment panics
+
 		config.CustomHeaders["X-ZenRows-Trace"] = traceID
 
 		log.Printf("Starting session for %s with trace %s", config.TargetURL, traceID)

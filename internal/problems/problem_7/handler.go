@@ -34,7 +34,6 @@ func NewHandler() http.HandlerFunc {
 			return
 		}
 
-		// BUG: Dereferencing a pointer without checking if it's nil
 		log.Printf("Updating limits for %s to max bytes: %d", req.AccountID, req.LimitConfig.MaxBytes)
 
 		w.WriteHeader(http.StatusOK)

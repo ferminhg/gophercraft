@@ -39,9 +39,8 @@ func NewHandler() http.HandlerFunc {
 			return
 		}
 
-		// BUG: Error from parseSelector is ignored. If it fails, rule is nil.
 		rule, _ := parseSelector(req.Selector)
-		
+
 		log.Printf("Preparing to extract tag: %s, class: %s from %s", rule.Tag, rule.Class, req.URL)
 
 		w.WriteHeader(http.StatusOK)

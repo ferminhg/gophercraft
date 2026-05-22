@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-// BUG HINT: C2
-
 func TestHandler_Returns200_WhenFixed(t *testing.T) {
 	handler := NewHandler()
 
@@ -38,7 +36,7 @@ func TestHandler_Returns200_WhenFixed(t *testing.T) {
 
 	// Wait a moment for all heavy scrapes to attempt to write to their channels
 	time.Sleep(200 * time.Millisecond)
-	
+
 	finalGoroutines := runtime.NumGoroutine()
 
 	// If the goroutines are leaked, final will be much higher than initial

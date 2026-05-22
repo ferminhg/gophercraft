@@ -33,7 +33,7 @@ func NewHandler() http.HandlerFunc {
 		}
 
 		log.Printf("Pinging upstream: %s", req.TargetURL)
-		
+
 		client := &http.Client{}
 		resp, err := client.Get(req.TargetURL)
 		if err != nil {
@@ -41,9 +41,7 @@ func NewHandler() http.HandlerFunc {
 			http.Error(w, "Upstream unreachable", http.StatusBadGateway)
 			return
 		}
-		
-		// BUG: response.Body is never closed. Causes fd exhaustion.
-		
+
 		if resp.StatusCode >= 400 {
 			http.Error(w, "Upstream returned error status", http.StatusBadGateway)
 			return

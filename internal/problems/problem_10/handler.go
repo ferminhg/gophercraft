@@ -47,10 +47,8 @@ func NewHandler() http.HandlerFunc {
 		log.Printf("Fetching results for page %d with limit %d", page, limit)
 
 		start := (page - 1) * limit
-		
-		// BUG: Off-by-one or out-of-bounds error.
-		// If start + limit exceeds the length of the slice, this panics.
-		end := start + limit + 1 
+
+		end := start + limit + 1
 
 		if start > len(globalResults) {
 			start = len(globalResults)

@@ -9,8 +9,6 @@ import (
 	"testing"
 )
 
-// BUG HINT: D1
-
 func TestHandler_Returns200_WhenFixed(t *testing.T) {
 	// Create a dummy upstream server
 	upstream := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

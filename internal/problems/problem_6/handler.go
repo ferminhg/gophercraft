@@ -31,9 +31,6 @@ func NewHandler() http.HandlerFunc {
 			return
 		}
 
-		// BUG: Unbuffered channel. If the client disconnects or the context times out before
-		// the goroutine finishes, the handler returns, but the goroutine blocks forever
-		// trying to send on `done`.
 		done := make(chan bool)
 
 		go performHeavyScrape(req.URL, done)

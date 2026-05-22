@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-// BUG HINT: A2
-
 func TestHandler_Returns200_WhenFixed(t *testing.T) {
 	handler := NewHandler()
 

@@ -29,9 +29,6 @@ func NewHandler() http.HandlerFunc {
 		regions, err := fetchRegions()
 		if err != nil {
 			log.Printf("Failed to fetch regions: %v", err)
-			// BUG: Always returns 500, even for expected errors like ErrNoRegionsAvailable
-			// which should probably be a 404 or a 200 with an empty list depending on the API design.
-			// The test expects a 404 for this specific error.
 			http.Error(w, "Internal server error", http.StatusInternalServerError)
 			return
 		}

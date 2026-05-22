@@ -8,8 +8,6 @@ import (
 	"testing"
 )
 
-// BUG HINT: E3
-
 func TestHandler_Returns200_WhenFixed(t *testing.T) {
 	handler := NewHandler()
 
@@ -23,10 +21,10 @@ func TestHandler_Returns200_WhenFixed(t *testing.T) {
 		t.Logf("HINT: check category E3")
 		t.Errorf("Expected status 200, got %d. The URL was likely malformed.", w.Code)
 	}
-	
+
 	var resp ForwardResponse
 	json.NewDecoder(w.Body).Decode(&resp)
-	
+
 	if !strings.Contains(resp.UpstreamURL, "hello+world+%26+stuff") && !strings.Contains(resp.UpstreamURL, "hello%20world%20%26%20stuff") {
 		t.Errorf("Upstream URL does not appear to be properly escaped: %s", resp.UpstreamURL)
 	}
