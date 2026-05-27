@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"sync"
 )
 
 type ProxyStatus struct {
@@ -12,7 +13,35 @@ type ProxyStatus struct {
 }
 
 // Global state for proxy statistics
-var regionStats = make(map[string]ProxyStatus)
+// Old implementation
+// var regionStats = make(map[string]ProxyStatus)
+// var regionStatsMutex sync.Mutex
+
+type MutexRegionStats struct {
+	locker sync.Mutex
+	stats map[string]ProxyStatus
+}
+
+func NewMutexRegionStats() *MutexRegionStats {
+	return &MutexRegionStats{
+		stats: make(map[string]ProxyStatus),
+	}
+}
+
+func (mr *MutexRegionStats) RecordRotation(region string, success bool) {
+	mr.locker.Lock()
+	defer mr.locker.Unlock()
+	stats := mr.stats[region]
+	if success {
+		stats.ActiveCount++
+	} else {
+		stats.ErrorCount++
+	}
+	mr.stats[region] = stats
+	log.Printf("\t Updated stats for region %s: %+v", region, stats)
+}
+
+var rwRegionStats = NewMutexRegionStats()
 
 type RotateRequest struct {
 	Region  string `json:"region"`
@@ -37,15 +66,21 @@ func NewHandler() http.HandlerFunc {
 			return
 		}
 
-		log.Printf("Recording proxy rotation for region %s", req.Region)
+		log.Printf("🧵 Recording proxy rotation for region %s", req.Region)
 
-		stats := regionStats[req.Region]
-		if req.Success {
-			stats.ActiveCount++
-		} else {
-			stats.ErrorCount++
-		}
-		regionStats[req.Region] = stats
+		// Old implementation
+		// regionStatsMutex.Lock()
+		// stats := regionStats[req.Region]
+		// if req.Success {
+		// 	stats.ActiveCount++
+		// } else {
+		// 	stats.ErrorCount++
+		// }
+		// regionStats[req.Region] = stats
+		// regionStatsMutex.Unlock()
+
+		rwRegionStats.RecordRotation(req.Region, req.Success)
+		
 
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{"status": "recorded"}`))
