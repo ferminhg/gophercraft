@@ -35,7 +35,7 @@ func NewHandler() http.HandlerFunc {
 
 		var req ExtractionRequest
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Bad request", http.StatusBadRequest)
+			http.Error(w, "Mal formed json", http.StatusBadRequest)
 			return
 		}
 
