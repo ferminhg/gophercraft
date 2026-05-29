@@ -39,7 +39,11 @@ func NewHandler() http.HandlerFunc {
 			return
 		}
 
-		rule, _ := parseSelector(req.Selector)
+		rule, err := parseSelector(req.Selector)
+		if err != nil {
+			http.Error(w, "Bad request", http.StatusBadRequest)
+			return
+		}
 
 		log.Printf("Preparing to extract tag: %s, class: %s from %s", rule.Tag, rule.Class, req.URL)
 
