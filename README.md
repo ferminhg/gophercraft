@@ -123,6 +123,36 @@ docker compose up -d --build
 
 The `api` service maps **port 3000** on the host to **3000** in the container. Adjust `ports`, `environment`, or `.env` as needed.
 
+### Monitoring stack (Prometheus + Grafana)
+
+The [compose.yml](compose.yml) file also starts a small monitoring stack next to the API, so you can scrape and chart the **`/metrics`** endpoint without any extra setup:
+
+| Service | Image | Host port | What it does |
+|---------|-------|-----------|--------------|
+| `prometheus` | `prom/prometheus:latest` | **9090** | Scrapes the API and stores the time series. It reads its config from [`deploy/prometheus.yml`](deploy/prometheus.yml), which is mounted read-only into the container. |
+| `grafana` | `grafana/grafana:latest` | **4000** | Dashboards on top of Prometheus. Grafana also listens on `3000` inside the container, so it is mapped to **4000** on the host to avoid a clash with the API. Default login is `admin` / `admin`. |
+
+Prometheus uses the scrape job defined in [`deploy/prometheus.yml`](deploy/prometheus.yml):
+
+```yaml
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "gophercraft"
+    metrics_path: /metrics
+    static_configs:
+      - targets: ["api:3000"]
+```
+
+Because every service shares the Compose network, Prometheus reaches the API by its service name (**`api:3000`**), not `localhost`. The `prometheus` and `grafana` services declare `depends_on` so they start after the API. Grafana data is kept in the `grafana-data` named volume, so dashboards and settings survive a restart.
+
+After `docker compose up -d --build`, open:
+
+- **API metrics**: http://localhost:3000/metrics
+- **Prometheus** (check *Status → Targets* — the `gophercraft` target should be `UP`): http://localhost:9090
+- **Grafana** (`admin` / `admin`, then add Prometheus as a datasource at `http://prometheus:9090`): http://localhost:4000
+
 Stop and remove containers for this project:
 
 ```bash
