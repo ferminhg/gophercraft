@@ -16,43 +16,21 @@ var _ prometheus.Gatherer = (*PrometheusRecorder)(nil)
 // registering metrics on its own Prometheus registry (not the global one).
 type PrometheusRecorder struct {
 	*prometheus.Registry
-
-	requestsTotal   *prometheus.CounterVec
-	requestDuration *prometheus.HistogramVec
+	prometheusMetrics
 }
 
 // NewPrometheusRecorder constructs a PrometheusRecorder with freshly registered metrics.
 func NewPrometheusRecorder() *PrometheusRecorder {
 	reg := prometheus.NewRegistry()
 
-	requestsTotal := prometheus.NewCounterVec(
-		prometheus.CounterOpts{
-			Name: "http_requests_total",
-			Help: "Total number of HTTP requests.",
-		},
-		[]string{"method", "route", "status_code"},
-	)
-
-	requestDuration := prometheus.NewHistogramVec(
-		prometheus.HistogramOpts{
-			Name:    "http_request_duration_seconds",
-			Help:    "HTTP request duration in seconds.",
-			Buckets: prometheus.DefBuckets,
-		},
-		[]string{"method", "route"},
-	)
-
 	reg.MustRegister(
 		collectors.NewGoCollector(),
 		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
-		requestsTotal,
-		requestDuration,
 	)
 
 	return &PrometheusRecorder{
-		Registry:        reg,
-		requestsTotal:   requestsTotal,
-		requestDuration: requestDuration,
+		Registry:          reg,
+		prometheusMetrics: newPrometheusMetrics(reg),
 	}
 }
 
