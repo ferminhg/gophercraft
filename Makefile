@@ -1,4 +1,4 @@
-.PHONY: build test coverage lint run docker-build
+.PHONY: build test coverage lint run docker-build load
 
 build:
 	go build ./...
@@ -20,3 +20,14 @@ IMAGE ?= gophercraft:latest
 
 docker-build:
 	docker build -t $(IMAGE) .
+
+DURATION    ?= 180s
+CONNECTIONS ?= 10
+THREADS     ?= 2
+LOAD_URL    ?= http://api:3000/status
+
+load:
+	docker run --rm \
+		--network gophercraft_default \
+		alpine:3.20 \
+		sh -c "apk add --no-cache wrk >/dev/null && wrk -t$(THREADS) -c$(CONNECTIONS) -d$(DURATION) $(LOAD_URL)"
