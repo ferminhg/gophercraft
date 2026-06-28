@@ -147,11 +147,22 @@ scrape_configs:
 
 Because every service shares the Compose network, Prometheus reaches the API by its service name (**`api:3000`**), not `localhost`. The `prometheus` and `grafana` services declare `depends_on` so they start after the API. Grafana data is kept in the `grafana-data` named volume, so dashboards and settings survive a restart.
 
+#### Pre-provisioned dashboard
+
+Grafana starts with a **pre-provisioned dashboard** — no manual import needed. The datasource and dashboard are loaded automatically via the files under [`deploy/grafana/provisioning/`](deploy/grafana/provisioning/):
+
+- [`datasources/prometheus.yml`](deploy/grafana/provisioning/datasources/prometheus.yml) — registers Prometheus (`http://prometheus:9090`) as the default datasource.
+- [`dashboards/gophercraft_overview.json`](deploy/grafana/provisioning/dashboards/gophercraft_overview.json) — the **Gophercraft Overview** dashboard with two panels:
+  - **HTTP request duration** — p99 / p90 / p75 latency histogram over time.
+  - **Requests per second** — per-route throughput derived from `http_requests_total`.
+
+![Gophercraft Overview Grafana dashboard](docs/grafana-dashboard.png)
+
 After `docker compose up -d --build`, open:
 
 - **API metrics**: http://localhost:3000/metrics
 - **Prometheus** (check *Status → Targets* — the `gophercraft` target should be `UP`): http://localhost:9090
-- **Grafana** (`admin` / `admin`, then add Prometheus as a datasource at `http://prometheus:9090`): http://localhost:4000
+- **Grafana** (`admin` / `admin` — dashboard loads automatically): http://localhost:4000
 
 Stop and remove containers for this project:
 
