@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 
 	"github.com/fermin/gophercraft/internal/domain/port"
 )
@@ -41,7 +42,12 @@ func NewPrometheusRecorder() *PrometheusRecorder {
 		[]string{"method", "route"},
 	)
 
-	reg.MustRegister(requestsTotal, requestDuration)
+	reg.MustRegister(
+		collectors.NewGoCollector(),
+		collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
+		requestsTotal,
+		requestDuration,
+	)
 
 	return &PrometheusRecorder{
 		Registry:        reg,

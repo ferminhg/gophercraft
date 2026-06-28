@@ -28,6 +28,22 @@ func TestPrometheusRecorder_RecordHTTPRequest(t *testing.T) {
 	assert.InDelta(t, 0.05, sum, 1e-9)
 }
 
+func TestPrometheusRecorder_IncludesGoAndProcessMetrics(t *testing.T) {
+	t.Parallel()
+
+	recorder := NewPrometheusRecorder()
+	mfs, err := recorder.Gather()
+	require.NoError(t, err)
+
+	names := make(map[string]bool, len(mfs))
+	for _, mf := range mfs {
+		names[mf.GetName()] = true
+	}
+
+	assert.True(t, names["go_goroutines"])
+	assert.True(t, names["process_cpu_seconds_total"])
+}
+
 func TestPrometheusRecorder_RecordHTTPRequest_EmptyRouteUsesUnknown(t *testing.T) {
 	t.Parallel()
 
