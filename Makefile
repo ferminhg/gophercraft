@@ -1,4 +1,8 @@
-.PHONY: build test test-watch coverage lint run dev docker-build load
+.PHONY: install build test test-watch coverage lint run dev docker-build load
+
+install:
+	go install gotest.tools/gotestsum
+	go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint
 
 build:
 	go build ./...
