@@ -43,3 +43,8 @@ func (r *PrometheusRecorder) RecordHTTPRequest(method, route string, statusCode 
 	r.requestsTotal.WithLabelValues(method, route, strconv.Itoa(statusCode)).Inc()
 	r.requestDuration.WithLabelValues(method, route).Observe(durationSecs)
 }
+
+// RecordEventPublished implements port.MetricsRecorder.
+func (r *PrometheusRecorder) RecordEventPublished(eventName string) {
+	r.eventsPublishedTotal.WithLabelValues(eventName).Inc()
+}

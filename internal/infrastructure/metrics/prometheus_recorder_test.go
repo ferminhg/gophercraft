@@ -44,6 +44,18 @@ func TestPrometheusRecorder_IncludesGoAndProcessMetrics(t *testing.T) {
 	assert.True(t, names["process_cpu_seconds_total"])
 }
 
+func TestPrometheusRecorder_RecordEventPublished(t *testing.T) {
+	t.Parallel()
+
+	recorder := NewPrometheusRecorder()
+	recorder.RecordEventPublished("dummy.created")
+	recorder.RecordEventPublished("dummy.created")
+
+	counter, err := recorder.eventsPublishedTotal.GetMetricWithLabelValues("dummy.created")
+	require.NoError(t, err)
+	assert.Equal(t, 2.0, testutil.ToFloat64(counter))
+}
+
 func TestPrometheusRecorder_RecordHTTPRequest_EmptyRouteUsesUnknown(t *testing.T) {
 	t.Parallel()
 

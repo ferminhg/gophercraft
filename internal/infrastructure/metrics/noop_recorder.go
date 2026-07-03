@@ -10,3 +10,6 @@ type NoopRecorder struct{}
 
 // RecordHTTPRequest implements port.MetricsRecorder.
 func (NoopRecorder) RecordHTTPRequest(string, string, int, float64) {}
+
+// RecordEventPublished implements port.MetricsRecorder.
+func (NoopRecorder) RecordEventPublished(string) {}

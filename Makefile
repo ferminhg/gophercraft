@@ -38,9 +38,10 @@ DURATION    ?= 180s
 CONNECTIONS ?= 10
 THREADS     ?= 2
 LOAD_URL    ?= http://api:3000/status
+LOAD_URL_GET ?= http://api:3000/dummies/4c4e67e0-babc-45c2-99d9-34dfd99d7a1c
 
 load:
 	docker run --rm \
 		--network gophercraft_default \
 		alpine:3.20 \
-		sh -c "apk add --no-cache wrk >/dev/null && wrk -t$(THREADS) -c$(CONNECTIONS) -d$(DURATION) $(LOAD_URL)"
+		sh -c "apk add --no-cache wrk >/dev/null && wrk -t$(THREADS) -c$(CONNECTIONS) -d$(DURATION) $(LOAD_URL_GET)"

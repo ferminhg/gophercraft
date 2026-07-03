@@ -27,7 +27,7 @@ func main() {
 	promMetrics := inframetrics.NewPrometheusRecorder()
 
 	repo := repository.NewMemoryDummyRepository()
-	publisher := infraevent.NewNoopPublisher(appLogger)
+	publisher := infraevent.NewNoopPublisher(appLogger, promMetrics)
 	createDummyHandler := command.NewCreateDummyHandler(repo, uuid.GoogleUUIDGenerator{}, clock.SystemClock{}, publisher)
 	getDummyHandler := query.NewGetDummyHandler(repo)
 

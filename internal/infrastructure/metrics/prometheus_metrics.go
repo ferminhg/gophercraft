@@ -5,8 +5,9 @@ import (
 )
 
 type prometheusMetrics struct {
-	requestsTotal   *prometheus.CounterVec
-	requestDuration *prometheus.HistogramVec
+	requestsTotal        *prometheus.CounterVec
+	requestDuration      *prometheus.HistogramVec
+	eventsPublishedTotal *prometheus.CounterVec
 }
 
 func newPrometheusMetrics(reg prometheus.Registerer) prometheusMetrics {
@@ -26,9 +27,16 @@ func newPrometheusMetrics(reg prometheus.Registerer) prometheusMetrics {
 			},
 			[]string{"method", "route"},
 		),
+		eventsPublishedTotal: prometheus.NewCounterVec(
+			prometheus.CounterOpts{
+				Name: "events_published_total",
+				Help: "Total number of domain events published.",
+			},
+			[]string{"event_name"},
+		),
 	}
 
-	reg.MustRegister(m.requestsTotal, m.requestDuration)
+	reg.MustRegister(m.requestsTotal, m.requestDuration, m.eventsPublishedTotal)
 
 	return m
 }
