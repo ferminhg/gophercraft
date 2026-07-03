@@ -26,7 +26,7 @@ func TestLoggerMiddleware_LogsRequestFields(t *testing.T) {
 
 	s, err := handler.NewServer(log, metrics.NoopRecorder{}, nil)
 	require.NoError(t, err)
-	s.RegisterRoutes()
+	s.RegisterRoutes(nil, nil)
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/status", nil)

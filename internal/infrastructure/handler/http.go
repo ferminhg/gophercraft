@@ -36,13 +36,18 @@ func (s *Server) Engine() *gin.Engine {
 }
 
 // RegisterRoutes mounts application routes on the Gin engine.
-func (s *Server) RegisterRoutes() {
+func (s *Server) RegisterRoutes(
+	createDummyHandler *CreateDummyGinHandler,
+	getDummyHandler *GetDummyGinHandler,
+) {
 	if s.metricsGatherer != nil {
 		s.engine.GET("/metrics", gin.WrapH(promhttp.HandlerFor(s.metricsGatherer, promhttp.HandlerOpts{})))
 	}
 	s.engine.GET("/status", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
+	s.engine.POST("/dummies", createDummyHandler.Handle)
+	s.engine.GET("/dummies/:id", getDummyHandler.Handle)
 }
 
 // Run listens and serves HTTP on addr (e.g. ":3000").

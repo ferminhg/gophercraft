@@ -17,8 +17,8 @@ import (
 
 func main() {
 	repo := repository.NewMemoryDummyRepository()
-	_ = command.NewCreateDummyHandler(repo, uuid.GoogleUUIDGenerator{}, clock.SystemClock{}, infraevent.NoopPublisher{})
-	_ = query.NewGetDummyHandler(repo)
+	createDummyHandler := command.NewCreateDummyHandler(repo, uuid.GoogleUUIDGenerator{}, clock.SystemClock{}, infraevent.NoopPublisher{})
+	getDummyHandler := query.NewGetDummyHandler(repo)
 
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {
@@ -39,7 +39,10 @@ func main() {
 	if err != nil {
 		appLogger.Fatal("http server init", "error", err)
 	}
-	s.RegisterRoutes()
+	s.RegisterRoutes(
+		infrahandler.NewCreateDummyGinHandler(createDummyHandler),
+		infrahandler.NewGetDummyGinHandler(getDummyHandler),
+	)
 	if err = s.Run(addr); err != nil {
 		appLogger.Fatal("http server", "error", err)
 	}

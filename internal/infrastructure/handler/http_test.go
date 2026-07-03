@@ -22,7 +22,7 @@ func TestStatusEndpoint(t *testing.T) {
 
 	s, err := handler.NewServer(logger.NewDiscardingZerologLogger(), metrics.NoopRecorder{}, nil)
 	require.NoError(t, err, "new server")
-	s.RegisterRoutes()
+	s.RegisterRoutes(nil, nil)
 
 	w := httptest.NewRecorder()
 	req := httptest.NewRequest(http.MethodGet, "/status", nil)

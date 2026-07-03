@@ -3,7 +3,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"sync"
 
 	"github.com/fermin/gophercraft/internal/domain/model"
@@ -41,7 +40,7 @@ func (r *MemoryDummyRepository) FindByID(_ context.Context, id model.DummyID) (m
 	defer r.mu.RUnlock()
 	e, ok := r.data[id.String()]
 	if !ok {
-		return model.Dummy{}, errors.New("dummy not found")
+		return model.Dummy{}, model.ErrDummyNotFound
 	}
 	return e, nil
 }

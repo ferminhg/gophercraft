@@ -13,4 +13,6 @@ var (
 	ErrDummyTypeInvalid = errors.New("dummy type: invalid")
 	// ErrDummyCreatedAtZero indicates the creation time was zero.
 	ErrDummyCreatedAtZero = errors.New("dummy created at: zero time")
+	// ErrDummyNotFound indicates no Dummy exists for the given ID.
+	ErrDummyNotFound = errors.New("dummy: not found")
 )
