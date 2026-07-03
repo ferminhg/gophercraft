@@ -9,6 +9,8 @@ var (
 	ErrDummyIDInvalid = errors.New("dummy id: invalid uuid")
 	// ErrDummyNameEmpty indicates the DummyName string was blank after trimming.
 	ErrDummyNameEmpty = errors.New("dummy name: empty")
+	// ErrDummyNameTooLong indicates the DummyName string exceeds the maximum length.
+	ErrDummyNameTooLong = errors.New("dummy name: too long")
 	// ErrDummyTypeInvalid indicates the DummyType string is not a known label.
 	ErrDummyTypeInvalid = errors.New("dummy type: invalid")
 	// ErrDummyCreatedAtZero indicates the creation time was zero.

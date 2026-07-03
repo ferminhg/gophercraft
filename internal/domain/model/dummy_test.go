@@ -1,6 +1,7 @@
 package model_test
 
 import (
+	"strings"
 	"testing"
 	"time"
 
@@ -135,6 +136,19 @@ func TestDummyName_NewErrors(t *testing.T) {
 	got, err := model.NewDummyName("   ")
 	require.Nil(t, got)
 	require.ErrorIs(t, err, model.ErrDummyNameEmpty)
+
+	got, err = model.NewDummyName(strings.Repeat("a", model.DummyNameMaxLength+1))
+	require.Nil(t, got)
+	require.ErrorIs(t, err, model.ErrDummyNameTooLong)
+}
+
+func TestDummyName_New_AcceptsMaxLength(t *testing.T) {
+	t.Parallel()
+
+	got, err := model.NewDummyName(strings.Repeat("a", model.DummyNameMaxLength))
+	require.NoError(t, err)
+	require.NotNil(t, got)
+	require.Len(t, got.String(), model.DummyNameMaxLength)
 }
 
 func TestDummyCreatedAt_NewErrors(t *testing.T) {
@@ -196,7 +210,15 @@ func TestDummyFromPrimitives_Invalid(t *testing.T) {
 		},
 		wantErr: model.ErrDummyNameEmpty,
 	}, {
-		name: "invalid type",
+		name: "name too long",
+		p: model.DummyPrimitives{
+			ID:        base.ID,
+			Name:      strings.Repeat("a", model.DummyNameMaxLength+1),
+			Type:      base.Type,
+			CreatedAt: base.CreatedAt,
+		},
+		wantErr: model.ErrDummyNameTooLong,
+	}, {
 		p: model.DummyPrimitives{
 			ID:        base.ID,
 			Name:      base.Name,

@@ -56,6 +56,7 @@ func isDomainValidationError(err error) bool {
 	return errors.Is(err, model.ErrDummyIDEmpty) ||
 		errors.Is(err, model.ErrDummyIDInvalid) ||
 		errors.Is(err, model.ErrDummyNameEmpty) ||
+		errors.Is(err, model.ErrDummyNameTooLong) ||
 		errors.Is(err, model.ErrDummyTypeInvalid) ||
 		errors.Is(err, model.ErrDummyCreatedAtZero)
 }

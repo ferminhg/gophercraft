@@ -3,6 +3,7 @@ package command_test
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
@@ -77,6 +78,31 @@ func TestCreateDummyHandler_Handle_InvalidName_DoesNotPersistOrPublish(t *testin
 	err := h.Handle(context.Background(), command.CreateDummyRequest{Name: "   ", Type: "alpha"})
 	require.Error(t, err)
 	require.ErrorIs(t, err, model.ErrDummyNameEmpty)
+	require.Len(t, pub.events, 0)
+
+	id := mustDummyID(t, dummyTestUUID)
+	_, findErr := repo.FindByID(context.Background(), id)
+	require.Error(t, findErr)
+}
+
+func TestCreateDummyHandler_Handle_NameTooLong_DoesNotPersistOrPublish(t *testing.T) {
+	t.Parallel()
+
+	repo := repository.NewMemoryDummyRepository()
+	pub := &recordingPublisher{}
+	h := command.NewCreateDummyHandler(
+		repo,
+		fixedUUIDGen{dummyTestUUID},
+		fixedClock{instant: time.Now().UTC()},
+		pub,
+	)
+
+	err := h.Handle(context.Background(), command.CreateDummyRequest{
+		Name: strings.Repeat("a", model.DummyNameMaxLength+1),
+		Type: "alpha",
+	})
+	require.Error(t, err)
+	require.ErrorIs(t, err, model.ErrDummyNameTooLong)
 	require.Len(t, pub.events, 0)
 
 	id := mustDummyID(t, dummyTestUUID)
