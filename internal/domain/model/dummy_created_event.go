@@ -17,13 +17,13 @@ type DummyCreated struct {
 
 // NewDummyCreated builds a DummyCreated event from validated value objects.
 func NewDummyCreated(id DummyID, name DummyName, t DummyType, createdAt DummyCreatedAt) *DummyCreated {
-	tm := createdAt.Time()
+	occurredAt := time.Now().UTC()
 	return &DummyCreated{
 		dummyID:      id.String(),
 		name:         name.String(),
 		dummyType:    t.String(),
-		dummyCreated: tm,
-		occurredAt:   tm,
+		dummyCreated: createdAt.Time(),
+		occurredAt:   occurredAt,
 	}
 }
 

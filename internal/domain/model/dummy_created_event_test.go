@@ -21,7 +21,7 @@ func TestNewDummyCreated_ImplementsContract(t *testing.T) {
 
 	require.Equal(t, "dummy.created", ev.EventName())
 	require.Equal(t, testUUID, ev.AggregateID())
-	require.True(t, ev.OccurredAt().Equal(createdAt.Time()))
+	require.True(t, ev.OccurredAt().After(createdAt.Time()))
 
 	require.Equal(t, testUUID, ev.DummyID())
 	require.Equal(t, "hello", ev.DummyName())

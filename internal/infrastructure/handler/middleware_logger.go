@@ -13,7 +13,7 @@ func LoggerMiddleware(logger port.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		start := time.Now()
 		method := c.Request.Method
-		path := c.Request.URL.Path
+		path := c.FullPath()
 
 		c.Next()
 

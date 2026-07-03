@@ -251,7 +251,7 @@ func TestCreateDummy_RecordsDummyCreatedEvent(t *testing.T) {
 	require.True(t, ok)
 	require.Equal(t, "dummy.created", got.EventName())
 	require.Equal(t, testUUID, got.AggregateID())
-	require.True(t, got.OccurredAt().Equal(createdAt.Time()))
+	require.True(t, got.OccurredAt().After(createdAt.Time()))
 	require.Equal(t, "aggregate-new", got.DummyName())
 	require.Equal(t, "gamma", got.DummyType())
 }
