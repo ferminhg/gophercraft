@@ -14,7 +14,7 @@ const testUUID = "550e8400-e29b-41d4-a716-446655440000"
 func TestDummyMother_Random(t *testing.T) {
 	t.Parallel()
 
-	d := NewDummyMother(NewFakerUUIDGenerator()).Random()
+	d := NewDummyMother(t, NewFakerUUIDGenerator()).Random()
 	require.NotEmpty(t, d.ID().String())
 	require.NotEmpty(t, d.Name().String())
 	require.True(t, d.Type().IsValid())
@@ -24,21 +24,21 @@ func TestDummyMother_Random(t *testing.T) {
 func TestDummyMother_WithType(t *testing.T) {
 	t.Parallel()
 
-	d := NewDummyMother(NewFakerUUIDGenerator()).WithType(model.DummyTypeBeta)
+	d := NewDummyMother(t, NewFakerUUIDGenerator()).WithType(model.DummyTypeBeta)
 	require.Equal(t, model.DummyTypeBeta, d.Type())
 }
 
 func TestDummyMother_WithName(t *testing.T) {
 	t.Parallel()
 
-	d := NewDummyMother(NewFakerUUIDGenerator()).WithName("fixed-name")
+	d := NewDummyMother(t, NewFakerUUIDGenerator()).WithName("fixed-name")
 	require.Equal(t, "fixed-name", d.Name().String())
 }
 
 func TestDummyMother_FixedID(t *testing.T) {
 	t.Parallel()
 
-	d := NewDummyMother(FixedUUIDGenerator{Value: testUUID}).Random()
+	d := NewDummyMother(t, FixedUUIDGenerator{Value: testUUID}).Random()
 	require.Equal(t, testUUID, d.ID().String())
 }
 

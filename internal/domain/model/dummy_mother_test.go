@@ -1,9 +1,11 @@
 package model_test
 
 import (
+	"testing"
 	"time"
 
 	"github.com/jaswdr/faker/v2"
+	"github.com/stretchr/testify/require"
 
 	"github.com/fermin/gophercraft/internal/domain/model"
 	"github.com/fermin/gophercraft/internal/domain/port"
@@ -11,13 +13,15 @@ import (
 
 // DummyMother builds Dummy instances for tests using random fake data.
 type DummyMother struct {
+	tb      testing.TB
 	uuidGen port.UUIDGenerator
 }
 
 // NewDummyMother constructs a DummyMother with the given UUID generator.
 // Use FixedUUIDGenerator for deterministic tests or FakerUUIDGenerator for random ones.
-func NewDummyMother(gen port.UUIDGenerator) DummyMother {
-	return DummyMother{uuidGen: gen}
+func NewDummyMother(tb testing.TB, gen port.UUIDGenerator) DummyMother {
+	tb.Helper()
+	return DummyMother{tb: tb, uuidGen: gen}
 }
 
 // Random returns a valid Dummy with randomly generated field values.
@@ -57,16 +61,10 @@ func (m DummyMother) build(customize func(*dummyMotherBuild)) model.Dummy {
 	customize(b)
 
 	id, err := model.NewDummyID(m.uuidGen.Generate())
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(m.tb, err)
 	name, err := model.NewDummyName(b.nameStr)
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(m.tb, err)
 	createdAt, err := model.NewDummyCreatedAt(f.Time().Time(time.Now()))
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(m.tb, err)
 	return model.NewDummy(*id, *name, b.dummyType, *createdAt)
 }
