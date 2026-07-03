@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/fermin/gophercraft/internal/domain/event"
@@ -62,4 +63,16 @@ func (e *DummyCreated) DummyType() string {
 // DummyCreatedAt is the creation timestamp captured in the event.
 func (e *DummyCreated) DummyCreatedAt() time.Time {
 	return e.dummyCreated
+}
+
+func (e *DummyCreated) String() string {
+	return fmt.Sprintf(
+		"DummyCreated{event=%s id=%s name=%s type=%s createdAt=%s occurredAt=%s}",
+		e.EventName(),
+		e.dummyID,
+		e.name,
+		e.dummyType,
+		e.dummyCreated.Format(time.RFC3339),
+		e.occurredAt.Format(time.RFC3339),
+	)
 }

@@ -97,6 +97,102 @@ Docs: [testify on pkg.go.dev](https://pkg.go.dev/github.com/stretchr/testify).
 
 There is a small **dummy** test under `internal/domain/model`, HTTP and middleware tests under `internal/infrastructure/handler`, zerolog adapter tests under `internal/infrastructure/logger`, and Prometheus recorder tests under `internal/infrastructure/metrics` so CI exercises the stack end to end.
 
+## Dummy API routes
+
+The **Dummy** example wires CQRS end to end: [`command.CreateDummyHandler`](internal/application/command/create_dummy.go) handles writes and [`query.GetDummyHandler`](internal/application/query/get_dummy.go) handles reads. The HTTP adapter in [`internal/infrastructure/handler`](internal/infrastructure/handler) exposes them as:
+
+| Method | Route | Use case | Success |
+|--------|-------|----------|---------|
+| `POST` | `/dummies` | Create | `201 Created` (empty body) |
+| `GET` | `/dummies/:id` | Get by UUID | `200 OK` with JSON body |
+
+**Request / validation rules**
+
+- **Create** (`POST /dummies`) — JSON body with `name` (non-empty, max 255 chars after trim) and `type` (one of `alpha`, `beta`, `gamma`).
+- **Get** (`GET /dummies/:id`) — path `id` must be a valid UUID. Unknown IDs return `404`.
+
+### Manual testing (curl)
+
+Start the API, then exercise the routes from another terminal:
+
+```bash
+make run
+```
+
+**Create a Dummy** — expect `201` and an empty response body (the server assigns a UUID internally):
+
+```bash
+curl -i -X POST http://localhost:3000/dummies \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"acme","type":"gamma"}'
+```
+
+**Get a Dummy** — replace `{id}` with a valid UUID. A random valid UUID that was never created returns `404`:
+
+```bash
+curl -i http://localhost:3000/dummies/550e8400-e29b-41d4-a716-446655440000
+```
+
+Successful `GET` responses look like:
+
+```json
+{
+  "id": "550e8400-e29b-41d4-a716-446655440000",
+  "name": "acme",
+  "type": "gamma",
+  "created_at": "2026-05-14T15:30:00Z"
+}
+```
+
+**Validation errors** — invalid JSON or domain rules return `400`; repository failures return `500`:
+
+```bash
+# invalid JSON → 400
+curl -i -X POST http://localhost:3000/dummies \
+  -H 'Content-Type: application/json' \
+  -d '{invalid'
+
+# empty name → 400
+curl -i -X POST http://localhost:3000/dummies \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"   ","type":"gamma"}'
+
+# unknown type → 400
+curl -i -X POST http://localhost:3000/dummies \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"acme","type":"delta"}'
+
+# malformed id → 400
+curl -i http://localhost:3000/dummies/not-a-uuid
+```
+
+`POST /dummies` does not return the new `id` in the response yet, so a full create-then-fetch round trip over HTTP requires knowing the generated UUID (for example from structured logs) or relying on the automated tests below, which use a fixed UUID and in-memory repository.
+
+### Automated tests
+
+Tests are split by layer, matching hexagonal boundaries:
+
+| Layer | Package | What it covers |
+|-------|---------|----------------|
+| **Application (command)** | [`internal/application/command`](internal/application/command) | [`CreateDummyHandler`](internal/application/command/create_dummy.go) — persistence, event publish, validation (`create_dummy_test.go`). |
+| **Application (query)** | [`internal/application/query`](internal/application/query) | [`GetDummyHandler`](internal/application/query/get_dummy.go) — load by ID, not-found (`get_dummy_test.go`). |
+| **HTTP adapter** | [`internal/infrastructure/handler`](internal/infrastructure/handler) | Gin handlers — status codes, JSON binding, error mapping (`create_dummy_test.go`, `get_dummy_test.go`). |
+
+Run only the Dummy-related packages:
+
+```bash
+go test -v -race ./internal/application/command/... ./internal/application/query/... ./internal/infrastructure/handler/...
+```
+
+Or run a single test by name (same pattern as `make test`):
+
+```bash
+go test -v -race -run ^TestCreateDummyHandler_Handle_PersistsAndPublishes$ ./internal/application/command
+go test -v -race -run ^TestGetDummyHandler_Handle_ReturnsStoredDummy$ ./internal/application/query
+go test -v -race -run ^TestCreateDummyGinHandler_Handle_Created$ ./internal/infrastructure/handler
+go test -v -race -run ^TestGetDummyGinHandler_Handle_OK$ ./internal/infrastructure/handler
+```
+
 ## Continuous integration (GitHub Actions)
 
 This repository ships with a **GitHub Actions** workflow at [`.github/workflows/ci.yml`](.github/workflows/ci.yml). It runs on **pull requests** and on **pushes to `main`**, and includes:

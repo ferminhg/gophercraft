@@ -16,10 +16,6 @@ import (
 )
 
 func main() {
-	repo := repository.NewMemoryDummyRepository()
-	createDummyHandler := command.NewCreateDummyHandler(repo, uuid.GoogleUUIDGenerator{}, clock.SystemClock{}, infraevent.NoopPublisher{})
-	getDummyHandler := query.NewGetDummyHandler(repo)
-
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {
 		logLevel = "info"
@@ -29,6 +25,11 @@ func main() {
 	appLogger := infralogger.NewZerologLogger(logLevel, logPretty, infralogger.GlobalFieldsFromEnv())
 
 	promMetrics := inframetrics.NewPrometheusRecorder()
+
+	repo := repository.NewMemoryDummyRepository()
+	publisher := infraevent.NewNoopPublisher(appLogger)
+	createDummyHandler := command.NewCreateDummyHandler(repo, uuid.GoogleUUIDGenerator{}, clock.SystemClock{}, publisher)
+	getDummyHandler := query.NewGetDummyHandler(repo)
 
 	addr := os.Getenv("HTTP_ADDR")
 	if addr == "" {

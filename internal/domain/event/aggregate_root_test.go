@@ -18,6 +18,7 @@ type stubDomainEvent struct {
 func (e stubDomainEvent) EventName() string     { return e.name }
 func (e stubDomainEvent) AggregateID() string   { return e.aggregateID }
 func (e stubDomainEvent) OccurredAt() time.Time { return e.occurredAt }
+func (e stubDomainEvent) String() string        { return e.name }
 
 func TestAggregateRoot_RecordAndPull_ReturnsEventsAndClears(t *testing.T) {
 	t.Parallel()
