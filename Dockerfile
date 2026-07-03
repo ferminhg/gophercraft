@@ -10,10 +10,20 @@ COPY . .
 EXPOSE 3000
 CMD ["go", "run", "./cmd/api"]
 
+FROM golang:1.26-alpine AS dev-hot
+RUN apk --no-cache add make gcc musl-dev
+RUN go install github.com/air-verse/air@latest
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY . .
+EXPOSE 3000
+CMD ["air", "-c", ".air.toml"]
+
 FROM golang:1.26-alpine AS builder
 WORKDIR /src
 
-COPY go.mod ./
+COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .

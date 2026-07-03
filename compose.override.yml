@@ -1,0 +1,7 @@
+services:
+  api:
+    build:
+      target: dev-hot
+    volumes:
+      - .:/src
+      - /src/tmp

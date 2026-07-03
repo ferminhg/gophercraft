@@ -1,4 +1,4 @@
-.PHONY: build test coverage lint run docker-build load
+.PHONY: build test coverage lint run dev docker-build load
 
 build:
 	go build ./...
@@ -15,6 +15,10 @@ lint:
 
 run:
 	go run ./cmd/api
+
+dev:
+	@command -v air >/dev/null 2>&1 || { printf 'air not installed; run: go install github.com/air-verse/air@latest\n'; exit 1; }
+	air -c .air.toml
 
 IMAGE ?= gophercraft:latest
 
