@@ -1,10 +1,15 @@
-.PHONY: build test coverage lint run dev docker-build load
+.PHONY: build test test-watch coverage lint run dev docker-build load
 
 build:
 	go build ./...
 
 test:
-	go test -v -race -coverprofile=coverage.out ./...
+	@command -v gotestsum >/dev/null 2>&1 || { printf 'gotestsum not installed; run: go install gotest.tools/gotestsum@latest\n'; exit 1; }
+	gotestsum --format-icons pkgname -- -race -coverprofile=coverage.out ./... 
+
+test-watch:
+	@command -v gotestsum >/dev/null 2>&1 || { printf 'gotestsum not installed; run: go install gotest.tools/gotestsum@latest\n'; exit 1; }
+	gotestsum --watch --format pkgname
 
 coverage: test
 	go tool cover -html=coverage.out

@@ -12,6 +12,8 @@ CMD ["go", "run", "./cmd/api"]
 
 FROM golang:1.26-alpine AS dev-hot
 RUN apk --no-cache add make gcc musl-dev
+RUN go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@v2.12.2
+RUN go install gotest.tools/gotestsum@latest
 RUN go install github.com/air-verse/air@latest
 WORKDIR /src
 COPY go.mod go.sum ./
