@@ -29,7 +29,7 @@ func NewHandler() http.HandlerFunc {
 		regions, err := fetchRegions()
 		if err != nil {
 			log.Printf("Failed to fetch regions: %v", err)
-			http.Error(w, "Internal server error", http.StatusInternalServerError)
+			http.Error(w, "Internal server error", http.StatusNotFound)
 			return
 		}
 

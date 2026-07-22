@@ -53,6 +53,9 @@ func NewHandler() http.HandlerFunc {
 		if start > len(globalResults) {
 			start = len(globalResults)
 		}
+		if end > len(globalResults) {
+			end = len(globalResults)
+		}
 		// Missing check to ensure 'end' doesn't exceed len(globalResults) before slicing
 
 		pagedData := globalResults[start:end]
