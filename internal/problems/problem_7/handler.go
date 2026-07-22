@@ -2,6 +2,7 @@ package problem_7
 
 import (
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 )
@@ -16,6 +17,24 @@ type BandwidthRequest struct {
 	LimitConfig *LimitConfig `json:"limit_config,omitempty"`
 }
 
+var ErrAccountIDRequired = errors.New("account_id is required")
+var ErrLimitConfigMissing = errors.New("limit_config is missing")
+var ErrBadRequest = errors.New("bad request")
+
+func NewParseBandwidthRequestBody(r *http.Request) (*BandwidthRequest, error) {
+	var req BandwidthRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		return nil, ErrBadRequest
+	}
+	if req.AccountID == "" {
+		return nil, ErrAccountIDRequired
+	}
+	if req.LimitConfig == nil {
+		return nil, ErrLimitConfigMissing
+	}
+	return &req, nil
+}
+
 func NewHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
@@ -23,14 +42,17 @@ func NewHandler() http.HandlerFunc {
 			return
 		}
 
-		var req BandwidthRequest
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-			http.Error(w, "Bad request", http.StatusBadRequest)
-			return
-		}
-
-		if req.AccountID == "" {
-			http.Error(w, "account_id is required", http.StatusBadRequest)
+		req, err := NewParseBandwidthRequestBody(r)
+		if err != nil {
+			if errors.Is(err, ErrAccountIDRequired) {
+				http.Error(w, "account_id is required", http.StatusBadRequest)
+				return
+			}
+			if errors.Is(err, ErrLimitConfigMissing) {
+				http.Error(w, "limit_config is missing", http.StatusOK)
+				return
+			}
+			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
